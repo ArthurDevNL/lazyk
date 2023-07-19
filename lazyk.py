@@ -116,7 +116,7 @@ if __name__ == '__main__':
     import cProfile
 
     with cProfile.Profile(subcalls=True, builtins=False) as pr:
-        probs = np.arange(1,37).reshape(6, -1)
+        probs = np.arange(1,25).reshape(8, -1)
         print(probs.shape[1])
         # probs = np.exp(-np.array([1,2,3]*3).reshape(3, -1))
         probs = probs / probs.sum(axis=1, keepdims=True)
