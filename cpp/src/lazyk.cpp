@@ -28,7 +28,6 @@ struct assignment
     double cost;
 };
 
-
 struct CompareAssignment
 {
     bool operator()(const assignment& lhs, const assignment& rhs) const
@@ -45,6 +44,8 @@ class State
 public:
     State(vector<vector<double>> probs) : k(0)
     {
+        max_k = pow(probs[0].size(), probs.size());
+
         // Take the log of the probabilities
         for (int i = 0; i < probs.size(); i++)
         {
@@ -77,7 +78,7 @@ public:
         next_best.insert({y0, 0});
 
         // Add y0 to the queue with its cost
-        queue.push({y0, cost(y0)});
+        queue.push({y0, argsrt_cost(y0)});
     }
 
     // Initial pre-computed useful values
@@ -90,15 +91,26 @@ public:
     unordered_map<vector<int>, int, vector_hash> next_best;
     vector<vector<int>> argsrt_assignments;
     priority_queue<assignment, vector<assignment>, CompareAssignment> queue;
+    ulong max_k;
 
     // Compute the cost of the current assignment by summing the log_probs
-    double cost(vector<int> argsrt_assignment)
+    double argsrt_cost(vector<int> argsrt_assignment)
     {
         double cost = 0;
         for (int i = 0; i < argsrt_assignment.size(); i++)
         {
             int idx = argsrt_log_probs[i][argsrt_assignment[i]];
             cost += log_probs[i][idx];
+        }
+        return cost;
+    }
+
+    double cost(vector<int> assignment)
+    {
+        double cost = 0;
+        for (int i = 0; i < assignment.size(); i++)
+        {
+            cost += log_probs[i][assignment[i]];
         }
         return cost;
     }
@@ -140,19 +152,22 @@ public:
 
         // Get the i-th best change
         vector<double> next_diffs;
-        for (int j = 0; j < state_.log_probs[next_best_i].size(); j++)
+        for (int token_i = 0; token_i < state_.log_probs.size(); token_i++)
         {
             // If we reached the last label for this assignment, set it to infinity
-            if (argsrt_assignment[next_best_i] == state_.log_probs[0].size())
+            if (argsrt_assignment[token_i] == state_.log_probs[0].size() - 1)
             {
                 next_diffs.push_back(INFINITY);
             }
             else
             {
-                int prob_idx = state_.argsrt_log_probs[next_best_i][argsrt_assignment[next_best_i]];
-                double curr_log_prob = state_.log_probs[next_best_i][prob_idx];
-                double next_log_prob = state_.log_probs[next_best_i][j];
-                next_diffs.push_back(state_.log_probs[next_best_i][j] - state_.log_probs[next_best_i][argsrt_assignment[next_best_i]]);
+                int curr_prob_idx = state_.argsrt_log_probs[token_i][argsrt_assignment[token_i]];
+                double curr_log_prob = state_.log_probs[token_i][curr_prob_idx];
+
+                int next_prob_idx = state_.argsrt_log_probs[token_i][argsrt_assignment[token_i] + 1];
+                double next_log_prob = state_.log_probs[token_i][next_prob_idx];
+
+                next_diffs.push_back(next_log_prob - curr_log_prob);
             }
         }
 
@@ -164,10 +179,16 @@ public:
         }
         sort(argsrt_next_diffs.begin(), argsrt_next_diffs.end(), [&](int a, int b)
              { return next_diffs[a] < next_diffs[b]; });
+            
+        // If the next best diff is infinity, return null
+        if (next_diffs[argsrt_next_diffs[next_best_i]] == INFINITY)
+        {
+            return nullptr;
+        }
 
         // Set the next best to be the next best change by creating a copy of argsrt_assignment and incrementing the next best
         vector<int> *next_best = new vector<int>(argsrt_assignment);
-        (*next_best)[next_best_i] = argsrt_next_diffs[state_.next_best[argsrt_assignment]];
+        (*next_best)[argsrt_next_diffs[next_best_i]]++;
         return next_best;
     }
 
@@ -188,15 +209,33 @@ public:
             state_.frontier.insert(*yj);
 
             // Add the argsrt_assignment to the queue with the cost of yj
-            state_.queue.push({argsrt_assignment, state_.cost(*yj)});
+            state_.queue.push({argsrt_assignment, state_.argsrt_cost(*yj)});
         }
+    }
+
+    vector<int> get_assignment()
+    {
+        vector<int> argsrt_assignment = state_.argsrt_assignments.back();
+        vector<int> assignment;
+        for (int i = 0; i < argsrt_assignment.size(); i++)
+        {
+            assignment.push_back(state_.argsrt_log_probs[i][argsrt_assignment[i]]);
+        }
+        return assignment;
+    }
+
+    // Last is nullptr
+    bool end()
+    {
+        return state_.k == state_.max_k;
     }
 
     Lazyk &operator++()
     {
         if (state_.queue.empty())
         {
-            // Fail
+            // Finished
+            state_.k++;
             return *this;
         }
 
@@ -209,6 +248,8 @@ public:
 
         // Get the next best state
         vector<int> *next_best = nextBest(yk.argsrt_assignment);
+        state_.argsrt_assignments.push_back(*next_best);
+        state_.next_best[yk.argsrt_assignment]++;
 
         // throw an exception if next best is null because we shouldn't have queued it then
         if (next_best == nullptr)
@@ -226,27 +267,42 @@ public:
 
 int main()
 {
-    State state({{0.5, 0.3, 0.2}, {0.2, 0.7, 0.1}});
+    // State state({{0.5, 0.3, 0.2}, {0.2, 0.7, 0.1}});
+    State state({{0.5, 0.3, 0.2}, {0.2, 0.7, 0.1}, {0.5, 0.3, 0.2}, {0.2, 0.7, 0.1}, {0.5, 0.3, 0.2}, {0.2, 0.7, 0.1}, {0.5, 0.3, 0.2}, {0.2, 0.7, 0.1}});
+    // State state({{0.7, 0.3}, {0.8, 0.2}});
 
-    // Print the initial state
-    for (int i = 0; i < state.argsrt_assignments[0].size(); i++)
-    {
-        cout << state.argsrt_assignments[0][i] << " ";
-    }
+    // // Print the initial state
+    // for (int i = 0; i < state.argsrt_assignments[0].size(); i++)
+    // {
+    //     cout << state.argsrt_assignments[0][i] << " ";
+    // }
 
     // print new line
-    cout << endl;
+    // cout << endl;
 
-    Lazyk start(state);
+    Lazyk lazyk(state);
 
     int i = 0;
-    while (start.state_.k != 11 && i < 20)
+    double last_log_prob = -INFINITY;
+    while (!lazyk.end())
     {
-        std::cout << start.state_.k << " ";
-        ++start;
+        vector<int> assignment = lazyk.get_assignment();
+        double log_prob = state.cost(assignment);
+        for (int i = 0; i < assignment.size(); i++)
+        {
+            cout << assignment[i] << " ";
+
+            if (log_prob < last_log_prob)
+            {
+                throw "Log prob should not decrease";
+            }
+            last_log_prob = log_prob;
+        }
+        cout << endl;
+        ++lazyk;
         i++;
     }
-    std::cout << std::endl;
+    std::cout << i << std::endl;
 
     return 0;
 }
