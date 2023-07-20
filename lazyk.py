@@ -116,7 +116,7 @@ if __name__ == '__main__':
     import cProfile
 
     with cProfile.Profile(subcalls=True, builtins=False) as pr:
-        probs = np.arange(1,25).reshape(8, -1)
+        probs = np.arange(1, 49).reshape(4, -1)
         print(probs.shape[1])
         # probs = np.exp(-np.array([1,2,3]*3).reshape(3, -1))
         probs = probs / probs.sum(axis=1, keepdims=True)
@@ -139,7 +139,7 @@ if __name__ == '__main__':
                 raise ValueError
             else:
                 last = val
-        pr.dump_stats('lazyk.prof')
+        # pr.dump_stats('lazyk.prof')
 
     num_expected_solutions = probs.shape[1]**probs.shape[0]
     print(f'Found {len(solutions)}/{num_expected_solutions} solutions')
