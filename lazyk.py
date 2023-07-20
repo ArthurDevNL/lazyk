@@ -134,7 +134,7 @@ if __name__ == '__main__':
 
             val = np.take_along_axis(lprobs, seq.reshape(-1,1), axis=1).sum()
             # val = t[1]
-            print(f"[{','.join([str(x) for x in seq])}] {val:.3f}")
+            # print(f"[{','.join([str(x) for x in seq])}] {val:.3f}")
             if last > val and not np.isclose(last, val, atol=1e-6):
                 raise ValueError
             else:
