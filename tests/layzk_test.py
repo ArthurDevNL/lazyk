@@ -4,7 +4,7 @@ from lazyk import Lazyk
 
 class TestLazyk(unittest.TestCase):
     
-    def perform(self, n_rows, n_cols):
+    def perform(self, n_rows, n_cols, stop_at=None):
         # probs = np.random.rand(n_rows, n_cols)
         probs = np.arange(1, n_rows*n_cols+1).reshape(n_rows, n_cols)
         probs = probs / probs.sum(axis=1, keepdims=True)
@@ -22,7 +22,11 @@ class TestLazyk(unittest.TestCase):
             self.assertTrue(last_val <= val + 1e-10)
             seqs.append(seq)
             last_val = val
-        self.assertEqual(i, n_cols**n_rows)
+
+            if stop_at is not None and i >= stop_at:
+                break
+        if stop_at is None:
+            self.assertEqual(i, n_cols**n_rows)
 
         # Assert that all sequences are unique
         seqs = np.array(seqs)
@@ -38,6 +42,10 @@ class TestLazyk(unittest.TestCase):
 
         # Try a bigger one: 5^7 = 78125
         self.perform(7, 5)
+
+        # Very large with early stopping
+        self.perform(45, 365, stop_at=2048)
+        self.perform(365, 45, stop_at=2048)
 
 if __name__ == '__main__':
     unittest.main()

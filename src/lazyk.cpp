@@ -45,15 +45,6 @@ class State
 public:
     State(vector<vector<double>> probs) : k(0)
     {
-        // If probs is empty, we are done
-        if (probs[0].size() == 0)
-        {
-            max_k = 0;
-            return;
-        }
-
-        max_k = pow(probs[0].size(), probs.size());
-
         // Take the log of the probabilities
         for (int i = 0; i < probs.size(); i++)
         {
@@ -100,7 +91,6 @@ public:
     unordered_map<vector<int>, vector<int>, vector_hash> next_diff_cache;
     vector<vector<int>> argsrt_assignments;
     priority_queue<assignment, vector<assignment>, CompareAssignment> queue;
-    ulong max_k;
 
     // Compute the cost of the current assignment by summing the log_probs
     double argsrt_cost(vector<int> argsrt_assignment)
@@ -254,15 +244,16 @@ public:
 
     bool end()
     {
-        return state_.k == state_.max_k;
+        return _last;
     }
+    bool _last = false;
 
     Lazyk &operator++()
     {
         if (state_.queue.empty())
         {
-            // Finished
             state_.k++;
+            _last = true;
             return *this;
         }
 
