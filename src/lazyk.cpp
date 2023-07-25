@@ -7,6 +7,7 @@
 #include <unordered_map>
 #include <optional>
 #include <numeric>
+#include <limits>
 
 using namespace std;
 
@@ -44,6 +45,13 @@ class State
 public:
     State(vector<vector<double>> probs) : k(0)
     {
+        // If probs is empty, we are done
+        if (probs[0].size() == 0)
+        {
+            max_k = 0;
+            return;
+        }
+
         max_k = pow(probs[0].size(), probs.size());
 
         // Take the log of the probabilities
@@ -127,6 +135,7 @@ class Lazyk
 public:
     Lazyk(vector<vector<double>> probs) : state_(probs)
     {
+        state_ = State(probs);
     }
     State state_;
 
@@ -161,7 +170,7 @@ public:
                 // If we reached the last label for this assignment, set it to infinity
                 if (argsrt_assignment[token_i] == state_.log_probs[token_i].size() - 1)
                 {
-                    next_diffs.push_back(INFINITY);
+                    next_diffs.push_back(numeric_limits<double>::max());
                 }
                 else
                 {
@@ -185,10 +194,10 @@ public:
             // Set argsrt_next_diffs to infinity where next_diffs is infinity
             for (int i = 0; i < argsrt_next_diffs.size(); i++)
             {
-                if (next_diffs[argsrt_next_diffs[i]] == INFINITY)
+                if (next_diffs[argsrt_next_diffs[i]] == numeric_limits<double>::max())
                 {
                     // Set to max int
-                    argsrt_next_diffs[i] = INT32_MAX;
+                    argsrt_next_diffs[i] = numeric_limits<int>::max();
                 }
             }
 
@@ -200,7 +209,7 @@ public:
         }
 
         // If the next best diff is infinity, return null
-        if (argsrt_next_diffs[next_best_i] == INT32_MAX)
+        if (argsrt_next_diffs[next_best_i] == numeric_limits<int>::max())
         {
             return nullptr;
         }
@@ -232,7 +241,7 @@ public:
         }
     }
 
-    vector<int> get_assignment()
+    vector<int> getAssignment()
     {
         vector<int> argsrt_assignment = state_.argsrt_assignments.back();
         vector<int> assignment;
@@ -243,7 +252,6 @@ public:
         return assignment;
     }
 
-    // Last is nullptr
     bool end()
     {
         return state_.k == state_.max_k;

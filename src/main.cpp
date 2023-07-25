@@ -2,7 +2,9 @@
 
 int main()
 {
-    vector<vector<double>> state({{0.5, 0.3, 0.2}, {0.2, 0.7, 0.1}, {0.5, 0.3, 0.2}, {0.2, 0.7, 0.1}, {0.5, 0.3, 0.2}, {0.2, 0.7, 0.1}, {0.5, 0.3, 0.2}, {0.2, 0.7, 0.1}});
+    // vector<vector<double>> state({{0.5, 0.3, 0.2}, {0.2, 0.7, 0.1}, {0.5, 0.3, 0.2}, {0.2, 0.7, 0.1}, {0.5, 0.3, 0.2}, {0.2, 0.7, 0.1}, {0.5, 0.3, 0.2}, {0.2, 0.7, 0.1}});
+    vector<vector<double>> state({{0.5, 0.3, 0.2}, {0.5, 0.3, 0.2}});
+    // vector<vector<double>> state({{0.5, 0.3, 0.2}});
     Lazyk lazyk(state);
 
     int i = 0;
@@ -15,7 +17,7 @@ int main()
     unordered_set<vector<int>, vector_hash> states;
     while (!lazyk.end())
     {
-        vector<int> assignment = lazyk.get_assignment();
+        vector<int> assignment = lazyk.getAssignment();
         if (states.find(assignment) != states.end())
         {
             throw "Duplicate state";
@@ -36,7 +38,7 @@ int main()
         ++lazyk;
         i++;
     }
-    std::cout << i << std::endl;
+    std::cout << endl  << "Total: " << i << std::endl;
 
     // print the total execution time
     clock_t end = clock();

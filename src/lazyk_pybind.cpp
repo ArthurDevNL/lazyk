@@ -6,10 +6,6 @@
   
 namespace py = pybind11;  
 
-int add(int i, int j) {  
-    return i + j;  
-}
-  
 PYBIND11_MODULE(lazyk, m) {  
     py::class_<Lazyk>(m, "Lazyk")  
         .def(py::init<vector<vector<double>>>())  
@@ -18,13 +14,12 @@ PYBIND11_MODULE(lazyk, m) {
             if (self.end()) {  
                 throw py::stop_iteration();  
             }  
-            self.operator++();  
-            // return self.get_assignment();
 
             // Convert the vector<int> to NumPy array
-            std::vector<int> vec = self.get_assignment();
+            std::vector<int> vec = self.getAssignment();
             py::array_t<int> arr(vec.size());
             std::copy(vec.begin(), vec.end(), arr.mutable_data());
+            self.operator++();  
             return arr;
         });  
 }  
