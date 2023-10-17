@@ -123,11 +123,13 @@ public:
 class Lazyk
 {
 public:
-    Lazyk(vector<vector<double>> probs) : state_(probs)
+    Lazyk(vector<vector<double>> probs, bool cacheAssignments = true) : state_(probs)
     {
         state_ = State(probs);
+        this->cacheAssignments_ = cacheAssignments;
     }
     State state_;
+    bool cacheAssignments_;
 
     bool operator!=(const Lazyk &other) const
     {
@@ -152,7 +154,7 @@ public:
 
         // Use cached next_diffs if they exist
         vector<int> argsrt_next_diffs;
-        if (state_.next_diff_cache.find(argsrt_assignment) == state_.next_diff_cache.end())
+        if (!cacheAssignments_ || state_.next_diff_cache.find(argsrt_assignment) == state_.next_diff_cache.end())
         {
             vector<double> next_diffs;
             for (int token_i = 0; token_i < state_.log_probs.size(); token_i++)
@@ -191,7 +193,8 @@ public:
                 }
             }
 
-            state_.next_diff_cache[argsrt_assignment] = argsrt_next_diffs;
+            if (cacheAssignments_)
+                state_.next_diff_cache[argsrt_assignment] = argsrt_next_diffs;
         }
         else
         {

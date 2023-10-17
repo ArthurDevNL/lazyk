@@ -7,8 +7,8 @@
 namespace py = pybind11;  
 
 PYBIND11_MODULE(lazyk, m) {  
-    py::class_<Lazyk>(m, "Lazyk")  
-        .def(py::init<vector<vector<double>>>())  
+    py::class_<Lazyk>(m, "lazyk")  
+        .def(py::init<vector<vector<double>>, bool>(), py::arg("probs"), py::arg("cache_assignments") = true)
         .def("__iter__", [](Lazyk &self) { return self; })  
         .def("__next__", [](Lazyk &self) {  
             if (self.end()) {  

@@ -1,10 +1,10 @@
 import unittest
 import numpy as np
-from lazyk import Lazyk
+from lazyk import lazyk
 
 class TestLazyk(unittest.TestCase):
     
-    def perform(self, n_rows, n_cols, stop_at=None):
+    def perform(self, n_rows, n_cols, cache_assignments=True, stop_at=None):
         # probs = np.random.rand(n_rows, n_cols)
         probs = np.arange(1, n_rows*n_cols+1).reshape(n_rows, n_cols)
         probs = probs / probs.sum(axis=1, keepdims=True)
@@ -13,7 +13,7 @@ class TestLazyk(unittest.TestCase):
         i = 0
         last_val = 0
         seqs = []
-        for seq in Lazyk(probs):
+        for seq in lazyk(probs, cache_assignments=cache_assignments):
             i += 1
             
             val = np.take_along_axis(lprobs, seq.reshape(-1,1), axis=1).sum()
@@ -46,6 +46,21 @@ class TestLazyk(unittest.TestCase):
         # Very large with early stopping
         self.perform(45, 365, stop_at=2048)
         self.perform(365, 45, stop_at=2048)
+
+    def test_no_cache(self):
+        self.perform(2, 2, cache_assignments=False)
+        self.perform(2, 2, cache_assignments=False)
+        self.perform(2, 2, cache_assignments=False)
+
+        self.perform(2, 3, cache_assignments=False)
+        self.perform(3, 2, cache_assignments=False)
+
+        # Try a bigger one: 5^7 = 78125
+        self.perform(7, 5, cache_assignments=False)
+
+        # Very large with early stopping
+        self.perform(45, 365, cache_assignments=False, stop_at=2048)
+        self.perform(365, 45, cache_assignments=False, stop_at=2048)
 
 if __name__ == '__main__':
     unittest.main()
