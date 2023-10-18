@@ -6,7 +6,7 @@ A C++/Python library for efficiently iterating over high-probability label-assig
 The library can be installed by cloning it and installing the Python package using pip.
 
 ```bash
-git clone git@github.com:AHemmerShift/lazyk.git
+git clone git@github.com:arthurdevnl/lazyk.git
 cd lazyk
 pip install -e .
 ```
