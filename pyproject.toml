@@ -1,3 +1,22 @@
 [build-system]
 requires = ["setuptools", "numpy", "cython", "pybind11>=2.11.0", "wheel"]
 build-backend = "setuptools.build_meta"
+
+[project]
+name = "lazyk"
+version = "0.1.0"
+authors = [
+  { name="Arthur Hemmer", email="arthurhemmer@hotmail.com" },
+]
+description = "A C++ implementation of the Lazy-k algorithm (A* with partial expansion)"
+readme = "README.md"
+requires-python = ">=3.8"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]
+
+[project.urls]
+Homepage = "https://github.com/arthurdevnl/lazyk"
+Issues = "https://github.com/ArthurDevNL/lazyk/issues"
