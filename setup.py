@@ -4,16 +4,16 @@ from pybind11.setup_helpers import Pybind11Extension, build_ext
 
 ext_modules = [
     Pybind11Extension(
-        "lazyk_decoding",
+        "lazyk",
         sorted(glob("src/*.cpp"))
     ),
 ]
 
 setup(
-    name="lazyk-decoding",
+    name="lazyk",
     version="0.1.0",
     author="Arthur Hemmer",
-    author_email="arthurhemmer@hotmail.com",
+    author_email="arthur.hemmer@shift-technology.com",
     description="A Python library with a C++ implementation of the lazy-k algorithm",
     ext_modules=ext_modules,
     cmdclass={"build_ext": build_ext},
