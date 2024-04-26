@@ -5,7 +5,7 @@ name: lazyk
 
 on:
   push:
-    branches: [ "main", "pypi-package" ]
+    branches: [ "main"]
 
 permissions:
   contents: read
@@ -32,7 +32,7 @@ jobs:
         with:
           path: ./.venv
           key: venv-${{ hashFiles('poetry.lock') }}
-      - name: Install the project dependencies
+      - name: Install project dependencies
         run: poetry install
-      - name: Run the automated tests (for example)
+      - name: Run tests
         run: poetry run pytest -v
