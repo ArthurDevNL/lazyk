@@ -18,7 +18,6 @@ generate-setup-file = true
 
 [tool.poetry.dependencies]
 python = "^3.8"
-pybind11 = "^2.11.0"
 
 [tool.poetry.dev-dependencies]
 numpy = "^1.21.2"
