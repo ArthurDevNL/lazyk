@@ -1,5 +1,5 @@
 {
-	"image": "mcr.microsoft.com/devcontainers/universal:2",
+	"image": "quay.io/pypa/manylinux2014_x86_64",
 	"customizations": {
 		"vscode": {
 			"extensions": [
