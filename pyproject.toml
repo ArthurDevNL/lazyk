@@ -17,7 +17,7 @@ script = "build.py"
 generate-setup-file = true
 
 [tool.poetry.dependencies]
-python = "^3.10.15"
+python = "^3.10.12"
 
 [tool.poetry.dev-dependencies]
 numpy = "^1.21.2"
