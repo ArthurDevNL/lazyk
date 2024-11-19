@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "Lazy-K"
+name = "Lazy-k"
 version = "0.1.1"
 description = "A C++ implementation of the Lazy-k algorithm (A* with partial expansion)"
 authors = ["Arthur Hemmer <arthurhemmer@hotmail.com>"]
@@ -17,13 +17,14 @@ script = "build.py"
 generate-setup-file = true
 
 [tool.poetry.dependencies]
-python = "^3.8"
+python = "^3.10.15"
 
 [tool.poetry.dev-dependencies]
 numpy = "^1.21.2"
 cython = "^0.29.24"
 pybind11 = "^2.11.0"
 pytest = "^8.1.1"
+
 
 [build-system]
 requires = [
