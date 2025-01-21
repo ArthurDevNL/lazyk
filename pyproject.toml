@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "Lazy-k"
-version = "0.1.2"
+version = "0.1.3"
 description = "A C++ implementation of the Lazy-k algorithm (A* with partial expansion)"
 authors = ["Arthur Hemmer <arthurhemmer@hotmail.com>"]
 readme = "README.md"

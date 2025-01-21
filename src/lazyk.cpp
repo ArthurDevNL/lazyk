@@ -269,6 +269,13 @@ public:
 
         // Get the next best state
         vector<int> *next_best = nextBest(yk.argsrt_assignment);
+
+        // If next_best is null, we've reached the end
+        if (next_best == nullptr) {
+            _last = true;
+            return *this;
+        }
+
         state_.argsrt_assignments.push_back(*next_best);
         state_.next_best[yk.argsrt_assignment]++;
 

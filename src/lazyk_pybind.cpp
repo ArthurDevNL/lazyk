@@ -19,7 +19,7 @@ PYBIND11_MODULE(lazyk, m) {
             std::vector<int> vec = self.getAssignment();
             py::array_t<int> arr(vec.size());
             std::copy(vec.begin(), vec.end(), arr.mutable_data());
-            self.operator++();  
+            ++self;  
             return arr;
         });  
 }  

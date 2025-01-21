@@ -61,6 +61,15 @@ class TestLazyk(unittest.TestCase):
         # Very large with early stopping
         self.perform(45, 365, cache_assignments=False, stop_at=2048)
         self.perform(365, 45, cache_assignments=False, stop_at=2048)
+    
+    def test_single_row_col(self):
+        self.perform(1, 2)
+        self.perform(1, 3)
+        self.perform(1, 5)
+
+        self.perform(2, 1)
+        self.perform(3, 1)
+        self.perform(5, 1)
 
 if __name__ == '__main__':
     unittest.main()
