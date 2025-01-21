@@ -7,22 +7,20 @@ if [ "$1" == "--test" ]; then
     IS_TEST=true
 fi
 
-# Set credentials based on environment
+# Set token based on environment
 if [ "$IS_TEST" = true ]; then
-    USERNAME="$PYPI_TEST_USERNAME"
-    PASSWORD="$PYPI_TEST_PASSWORD"
+    TOKEN="$PYPI_TEST_TOKEN"
     REPO="https://test.pypi.org/legacy/"
     echo "Using TestPyPI environment..."
 else
-    USERNAME="$PYPI_USERNAME"
-    PASSWORD="$PYPI_PASSWORD"
+    TOKEN="$PYPI_TOKEN"
     REPO="https://upload.pypi.org/legacy/"
     echo "Using production PyPI environment..."
 fi
 
-# Check if credentials are set
-if [ -z "$USERNAME" ] || [ -z "$PASSWORD" ]; then
-    echo "Please set $([ "$IS_TEST" = true ] && echo "PYPI_TEST_USERNAME and PYPI_TEST_PASSWORD" || echo "PYPI_USERNAME and PYPI_PASSWORD") environment variables"
+# Check if token is set
+if [ -z "$TOKEN" ]; then
+    echo "Please set $([ "$IS_TEST" = true ] && echo "PYPI_TEST_TOKEN" || echo "PYPI_TOKEN") environment variable"
     exit 1
 fi
 
@@ -41,8 +39,8 @@ if [ "$confirm" != "y" ]; then
     exit 1
 fi
 
-# Upload to PyPI
+# Upload to PyPI using API token
 echo "Uploading to $([ "$IS_TEST" = true ] && echo "TestPyPI" || echo "PyPI")..."
-twine upload --repository-url "$REPO" --username "$USERNAME" --password "$PASSWORD" wheelhouse/*
+twine upload --repository-url "$REPO" --username "__token__" --password "$TOKEN" wheelhouse/*
 
 echo "Upload complete!" 
