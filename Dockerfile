@@ -1,8 +1,8 @@
 FROM quay.io/pypa/manylinux2014_x86_64
 
-# Install poetry
-RUN curl -sSL https://install.python-poetry.org | /opt/python/cp310-cp310/bin/python3 - && \
-    ln -s /root/.local/bin/poetry /usr/local/bin/poetry
+# Install uv
+RUN /opt/python/cp311-cp311/bin/pip install uv
+ENV PATH="/root/.local/bin:${PATH}"
 
 # Set working directory
 WORKDIR /app

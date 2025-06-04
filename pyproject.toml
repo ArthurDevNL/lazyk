@@ -1,36 +1,35 @@
-[tool.poetry]
-name = "Lazy-k"
+[project]
+name = "lazyk"
 version = "0.1.4"
 description = "A C++ implementation of the Lazy-k algorithm (A* with partial expansion)"
-authors = ["Arthur Hemmer <arthurhemmer@hotmail.com>"]
+authors = [{name = "Arthur Hemmer", email = "arthurhemmer@hotmail.com"}]
 readme = "README.md"
-packages = [{include = "src"}]
-homepage = "https://github.com/arthurdevnl/lazyk"
+requires-python = ">=3.9"
 classifiers = [
     "Programming Language :: Python :: 3",
     "License :: OSI Approved :: MIT License",
     "Operating System :: OS Independent",
 ]
 
-[tool.poetry.build]
-script = "build.py"
-generate-setup-file = true
+[project.urls]
+Homepage = "https://github.com/arthurdevnl/lazyk"
 
-[tool.poetry.dependencies]
-python = ">=3.9"
+[project.optional-dependencies]
+dev = [
+    "numpy>=1.24.4",
+    "cython>=0.29.24",
+    "pybind11>=2.11.0",
+    "pytest>=8.1.1",
+]
 
-[tool.poetry.dev-dependencies]
-numpy = "^1.24.4"
-cython = "^0.29.24"
-pybind11 = "^2.11.0"
-pytest = "^8.1.1"
+[tool.setuptools.packages.find]
+where = ["src"]
 
 [build-system]
 requires = [
-    "poetry-core>=1.0.0",
     "setuptools>=65.4.1",
-    "pybind11",
     "wheel",
     "cython",
+    "pybind11",
 ]
-build-backend = "poetry.core.masonry.api"
+build-backend = "setuptools.build_meta"
