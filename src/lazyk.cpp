@@ -5,7 +5,6 @@
 #include <unordered_set>
 #include <algorithm>
 #include <unordered_map>
-#include <optional>
 #include <numeric>
 #include <limits>
 
@@ -43,7 +42,7 @@ struct CompareAssignment
 class State
 {
 public:
-    State(vector<vector<double>> probs) : k(0)
+    State(const vector<vector<double>> &probs) : k(0)
     {
         // Take the log of the probabilities
         for (int i = 0; i < probs.size(); i++)
@@ -93,7 +92,7 @@ public:
     priority_queue<assignment, vector<assignment>, CompareAssignment> queue;
 
     // Compute the cost of the current assignment by summing the log_probs
-    double argsrt_cost(vector<int> argsrt_assignment)
+    double argsrt_cost(const vector<int> &argsrt_assignment) const
     {
         double cost = 0;
         for (int i = 0; i < argsrt_assignment.size(); i++)
@@ -104,7 +103,7 @@ public:
         return cost;
     }
 
-    double cost(vector<int> assignment)
+    double cost(const vector<int> &assignment) const
     {
         double cost = 0;
         for (int i = 0; i < assignment.size(); i++)
@@ -123,10 +122,9 @@ public:
 class Lazyk
 {
 public:
-    Lazyk(vector<vector<double>> probs, bool cacheAssignments = true) : state_(probs)
+    Lazyk(const vector<vector<double>> &probs, bool cacheAssignments = true)
+        : state_(probs), cacheAssignments_(cacheAssignments)
     {
-        state_ = State(probs);
-        this->cacheAssignments_ = cacheAssignments;
     }
     State state_;
     bool cacheAssignments_;
@@ -141,12 +139,12 @@ public:
         return state_;
     }
 
-    vector<int> *nextBest(vector<int> argsrt_assignment)
+    vector<int> nextBest(const vector<int> &argsrt_assignment)
     {
         if (state_.next_best[argsrt_assignment] == state_.log_probs.size())
         {
             // We have already computed the next best for this assignment. Return null
-            return nullptr;
+            return {};
         }
 
         // Get the token index for the next best change
@@ -204,37 +202,37 @@ public:
         // If the next best diff is infinity, return null
         if (argsrt_next_diffs[next_best_i] == numeric_limits<int>::max())
         {
-            return nullptr;
+            return {};
         }
 
         // Set the next best to be the next best change by creating a copy of argsrt_assignment and incrementing the next best
-        vector<int> *next_best = new vector<int>(argsrt_assignment);
-        (*next_best)[argsrt_next_diffs[next_best_i]]++;
+        vector<int> next_best = argsrt_assignment;
+        next_best[argsrt_next_diffs[next_best_i]]++;
         return next_best;
     }
 
-    void addNextBest(vector<int> argsrt_assignment)
+    void addNextBest(const vector<int> &argsrt_assignment)
     {
-        vector<int> *yj = nextBest(argsrt_assignment);
+        vector<int> yj = nextBest(argsrt_assignment);
 
         // While yj is not null and exists in the frontier, find the next best
-        while (yj != nullptr && state_.frontier.find(*yj) != state_.frontier.end())
+        while (!yj.empty() && state_.frontier.find(yj) != state_.frontier.end())
         {
             state_.next_best[argsrt_assignment]++;
             yj = nextBest(argsrt_assignment);
         }
 
-        if (yj != nullptr)
+        if (!yj.empty())
         {
             // Add yj to the frontier
-            state_.frontier.insert(*yj);
+            state_.frontier.insert(yj);
 
             // Add the argsrt_assignment to the queue with the cost of yj
-            state_.queue.push({argsrt_assignment, state_.argsrt_cost(*yj)});
+            state_.queue.push({argsrt_assignment, state_.argsrt_cost(yj)});
         }
     }
 
-    vector<int> getAssignment()
+    vector<int> getAssignment() const
     {
         vector<int> argsrt_assignment = state_.argsrt_assignments.back();
         vector<int> assignment;
@@ -245,7 +243,7 @@ public:
         return assignment;
     }
 
-    bool end()
+    bool end() const
     {
         return _last;
     }
@@ -268,25 +266,19 @@ public:
         state_.queue.pop();
 
         // Get the next best state
-        vector<int> *next_best = nextBest(yk.argsrt_assignment);
+        vector<int> next_best = nextBest(yk.argsrt_assignment);
 
-        // If next_best is null, we've reached the end
-        if (next_best == nullptr) {
+        // If next_best is empty, we've reached the end
+        if (next_best.empty()) {
             _last = true;
             return *this;
         }
 
-        state_.argsrt_assignments.push_back(*next_best);
+        state_.argsrt_assignments.push_back(next_best);
         state_.next_best[yk.argsrt_assignment]++;
 
-        // throw an exception if next best is null because we shouldn't have queued it then
-        if (next_best == nullptr)
-        {
-            throw "Next best should not be null";
-        }
-
         addNextBest(yk.argsrt_assignment);
-        addNextBest(*next_best);
+        addNextBest(next_best);
 
         // Set next_best on the current state
         return *this;
