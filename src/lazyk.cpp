@@ -45,10 +45,10 @@ public:
     State(const vector<vector<double>> &probs) : k(0)
     {
         // Take the log of the probabilities
-        for (int i = 0; i < probs.size(); i++)
+        for (size_t i = 0; i < probs.size(); i++)
         {
             vector<double> log_prob_token;
-            for (int j = 0; j < probs[i].size(); j++)
+            for (size_t j = 0; j < probs[i].size(); j++)
             {
                 log_prob_token.push_back(-log(probs[i][j]));
             }
@@ -56,12 +56,12 @@ public:
         }
 
         // Compute the argsort of the log_probs
-        for (int i = 0; i < log_probs.size(); i++)
+        for (size_t i = 0; i < log_probs.size(); i++)
         {
             vector<int> argsort_token;
-            for (int j = 0; j < log_probs[i].size(); j++)
+            for (size_t j = 0; j < log_probs[i].size(); j++)
             {
-                argsort_token.push_back(j);
+                argsort_token.push_back(static_cast<int>(j));
             }
             sort(argsort_token.begin(), argsort_token.end(), [&](int a, int b)
                  { return log_probs[i][a] < log_probs[i][b]; });
@@ -95,7 +95,7 @@ public:
     double argsrt_cost(const vector<int> &argsrt_assignment) const
     {
         double cost = 0;
-        for (int i = 0; i < argsrt_assignment.size(); i++)
+        for (size_t i = 0; i < argsrt_assignment.size(); i++)
         {
             int idx = argsrt_log_probs[i][argsrt_assignment[i]];
             cost += log_probs[i][idx];
@@ -106,7 +106,7 @@ public:
     double cost(const vector<int> &assignment) const
     {
         double cost = 0;
-        for (int i = 0; i < assignment.size(); i++)
+        for (size_t i = 0; i < assignment.size(); i++)
         {
             cost += log_probs[i][assignment[i]];
         }
@@ -141,7 +141,7 @@ public:
 
     vector<int> nextBest(const vector<int> &argsrt_assignment)
     {
-        if (state_.next_best[argsrt_assignment] == state_.log_probs.size())
+        if (static_cast<size_t>(state_.next_best[argsrt_assignment]) == state_.log_probs.size())
         {
             // We have already computed the next best for this assignment. Return null
             return {};
@@ -155,10 +155,10 @@ public:
         if (!cacheAssignments_ || state_.next_diff_cache.find(argsrt_assignment) == state_.next_diff_cache.end())
         {
             vector<double> next_diffs;
-            for (int token_i = 0; token_i < state_.log_probs.size(); token_i++)
+            for (size_t token_i = 0; token_i < state_.log_probs.size(); token_i++)
             {
                 // If we reached the last label for this assignment, set it to infinity
-                if (argsrt_assignment[token_i] == state_.log_probs[token_i].size() - 1)
+                if (static_cast<size_t>(argsrt_assignment[token_i]) == state_.log_probs[token_i].size() - 1)
                 {
                     next_diffs.push_back(numeric_limits<double>::max());
                 }
@@ -182,7 +182,7 @@ public:
                  { return next_diffs[a] < next_diffs[b]; });
 
             // Set argsrt_next_diffs to infinity where next_diffs is infinity
-            for (int i = 0; i < argsrt_next_diffs.size(); i++)
+            for (size_t i = 0; i < argsrt_next_diffs.size(); i++)
             {
                 if (next_diffs[argsrt_next_diffs[i]] == numeric_limits<double>::max())
                 {
@@ -236,7 +236,7 @@ public:
     {
         vector<int> argsrt_assignment = state_.argsrt_assignments.back();
         vector<int> assignment;
-        for (int i = 0; i < argsrt_assignment.size(); i++)
+        for (size_t i = 0; i < argsrt_assignment.size(); i++)
         {
             assignment.push_back(state_.argsrt_log_probs[i][argsrt_assignment[i]]);
         }
