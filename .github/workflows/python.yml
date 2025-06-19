@@ -17,22 +17,23 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
-      - name: Install Python
-        uses: actions/setup-python@v4
-        # see details (matrix, python-version, python-version-file, etc.)
-        # https://github.com/actions/setup-python
-      - name: Install poetry
-        uses: abatilo/actions-poetry@v2
-      - name: Setup a local virtual environment (if no poetry.toml file)
-        run: |
-          poetry config virtualenvs.create true --local
-          poetry config virtualenvs.in-project true --local
-      - uses: actions/cache@v3
-        name: Define a cache for the virtual environment based on the dependencies lock file
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
         with:
-          path: ./.venv
-          key: venv-${{ hashFiles('poetry.lock') }}
-      - name: Install project dependencies
-        run: poetry install
+          version: "0.7.13"
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version-file: "pyproject.toml"
+      - name: Install build dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y build-essential g++
+      - name: Sync project dependencies
+        run: uv sync --locked --all-extras --dev
+      - name: Build lazyk
+        run: uv build
+      - name: Install lazyk
+        run: uv run pip install . --verbose
       - name: Run tests
-        run: poetry run pytest -v
+        run: uv run python -m pytest -v
