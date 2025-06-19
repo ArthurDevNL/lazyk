@@ -32,6 +32,6 @@ jobs:
       - name: Build lazyk
         run: uv build
       - name: Install lazyk
-        run: uv pip install -e . --verbose
+        run: uv pip install . --verbose
       - name: Run tests
         run: uv run python -m pytest -v
