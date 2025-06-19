@@ -21,12 +21,6 @@ dev = [
     "pytest>=8.4.1",
 ]
 
-[tool.setuptools.packages.find]
-where = ["src"]
-
-[tool.setuptools.package-dir]
-"" = "src"
-
 [build-system]
 requires = [
     "setuptools>=80.9.0",
