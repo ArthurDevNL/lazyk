@@ -24,6 +24,6 @@ jobs:
       - name: Install uv
         run: pip install uv
       - name: Sync project dependencies
-        run: uv sync --extra dev
+        run: uv sync
       - name: Run tests
         run: uv run python -m pytest -v
