@@ -1,35 +1,37 @@
 [project]
 name = "lazyk"
-version = "0.1.4"
+version = "0.1.5"
 description = "A C++ implementation of the Lazy-k algorithm (A* with partial expansion)"
 authors = [{name = "Arthur Hemmer", email = "arthurhemmer@hotmail.com"}]
 readme = "README.md"
-requires-python = ">=3.9"
+requires-python = ">=3.10"
 classifiers = [
     "Programming Language :: Python :: 3",
-    "License :: OSI Approved :: MIT License",
     "Operating System :: OS Independent",
 ]
 
 [project.urls]
 Homepage = "https://github.com/arthurdevnl/lazyk"
 
-[project.optional-dependencies]
+[dependency-groups]
 dev = [
-    "numpy>=1.24.4",
-    "cython>=0.29.24",
-    "pybind11>=2.11.0",
-    "pytest>=8.1.1",
+    "numpy>=2.2.6",
+    "cython>=3.1.2",
+    "pybind11>=2.13.6",
+    "pytest>=8.4.1",
 ]
 
 [tool.setuptools.packages.find]
 where = ["src"]
 
+[tool.setuptools.package-dir]
+"" = "src"
+
 [build-system]
 requires = [
-    "setuptools>=65.4.1",
-    "wheel",
-    "cython",
-    "pybind11",
+    "setuptools>=80.9.0",
+    "wheel>=0.45.1",
+    "cython>=3.1.2",
+    "pybind11>=2.13.6",
 ]
 build-backend = "setuptools.build_meta"
