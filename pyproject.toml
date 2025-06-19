@@ -1,5 +1,5 @@
 [project]
-name = "lazyk"
+name = "lazy_k"
 version = "0.1.5"
 description = "A C++ implementation of the Lazy-k algorithm (A* with partial expansion)"
 authors = [{name = "Arthur Hemmer", email = "arthurhemmer@hotmail.com"}]

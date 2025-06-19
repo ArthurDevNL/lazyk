@@ -25,7 +25,7 @@ if [ -z "$TOKEN" ]; then
 fi
 
 # Install twine if not already installed
-pip install --upgrade twine
+uv pip install --upgrade twine
 
 # Check the distribution files
 echo "Checking distribution files..."
