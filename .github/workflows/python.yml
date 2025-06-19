@@ -25,5 +25,7 @@ jobs:
         run: pip install uv
       - name: Sync project dependencies
         run: uv sync
+      - name: Install lazyk
+        run: uv pip install -e .
       - name: Run tests
         run: uv run python -m pytest -v
